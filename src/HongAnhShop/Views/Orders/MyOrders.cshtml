@@ -1,0 +1,156 @@
+@model List<HongAnhShop.Models.VehicleOrderSummary>
+@using System.Globalization
+@{
+    Layout = null;
+    ViewData["Title"] = "Đơn hàng của tôi | AURELIA";
+    var vi = CultureInfo.GetCultureInfo("vi-VN");
+}
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>@ViewData["Title"]</title>
+<style>
+:root{--bg:#090b0d;--panel:#151719;--gold:#c9aa76;--gold2:#f0dfbc;--text:#f5f0e7;--muted:#a5a7a8;--line:rgba(201,170,118,.24)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,'Segoe UI',Arial,sans-serif}a{text-decoration:none;color:inherit}
+.header{border-bottom:1px solid var(--line);background:#0d0e0f}.head-inner{max-width:1190px;margin:auto;padding:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.brand{font:29px "Times New Roman",serif;color:var(--gold2);letter-spacing:5px}.top-links{display:flex;gap:10px;flex-wrap:wrap}.top-links a{padding:11px 16px;border:1px solid var(--line);border-radius:7px;color:var(--gold2);font-size:12px}.top-links a:hover,.action:hover{background:rgba(201,170,118,.12)}
+.wrap{max-width:1190px;margin:auto;padding:49px 24px 80px}.eyebrow{color:var(--gold);letter-spacing:2.6px;font-size:11px;text-transform:uppercase}.title{font:normal clamp(36px,5vw,56px) "Times New Roman",serif;margin:15px 0}.desc{font-size:14px;color:var(--muted);line-height:1.85;max-width:770px;margin-bottom:35px}
+.panel{background:linear-gradient(145deg,#1a1c1e,#101214);border:1px solid var(--line);padding:26px;border-radius:13px;overflow:hidden}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:650px}th{color:var(--gold);font-size:10px;letter-spacing:1.5px;text-align:left;text-transform:uppercase;padding:15px 12px;border-bottom:1px solid var(--line)}td{font-size:13px;padding:19px 12px;border-bottom:1px solid rgba(255,255,255,.08)}.code{color:var(--gold2);font-family:monospace;overflow-wrap:anywhere}.money{font-weight:600;color:var(--gold2)}.muted{color:var(--muted)}.action{display:inline-block;border:1px solid var(--line);border-radius:7px;padding:10px 14px;color:var(--gold2);font-size:12px;white-space:nowrap}
+.badge{display:inline-block;padding:7px 11px;border-radius:99px;font-size:11px;white-space:nowrap}.pending{background:#493b24;color:#f8da9e}.confirmed{background:#233d4c;color:#b9ddef}.completed{background:#1b3e2c;color:#b5e6c5}.cancelled{background:#47282d;color:#f0b4b9}
+.empty{text-align:center;padding:55px 20px}.empty-icon{font:48px "Times New Roman",serif;color:var(--gold)}.empty h2{font:normal 30px "Times New Roman",serif}.empty p{font-size:13px;color:var(--muted);line-height:1.85}.primary{display:inline-block;background:var(--gold);color:#19130b;padding:14px 19px;border-radius:6px;font-size:12px;font-weight:700;margin-top:15px}.note{font-size:12px;color:var(--muted);line-height:1.8;margin-top:17px}.footer{text-align:center;padding:22px;border-top:1px solid var(--line);color:#8f8d88;font-size:11px}
+@@media(max-width:680px){.wrap{padding:32px 15px 54px}.panel{padding:13px}.head-inner{padding:19px 15px}}
+</style>
+<style id="aurelia-light-style" media="not all">
+/* AURELIA light order history */
+:root{--bg:#f8f7f3;--panel:#fff;--gold:#866237;--gold2:#79582d;
+ --text:#282520;--muted:#706a62;--line:#e6ddce}
+html{color-scheme:light}body{background:#f8f7f3;color:#282520}
+.header{background:#fff;border-color:#e6ddce}
+.brand,.code,.money{color:#78572d}
+.panel{background:#fff;border-color:#e6ddce;box-shadow:0 12px 32px rgba(64,45,23,.05)}
+th,td{border-color:#e8e1d8}
+th{color:#806036}
+.pending{background:#fff0d8;color:#77521d}
+.confirmed{background:#e4f1fa;color:#245a82}
+.completed{background:#e3f5e9;color:#246a3b}
+.cancelled{background:#fae7e6;color:#a33c3c}
+.action,.top-links a,.nav a{color:#75542e}
+.action:hover,.top-links a:hover,.nav a:hover{background:#f4ead9}
+.primary{background:#8a6639;color:#fff}
+.note,.footer{color:#716c64}
+
+
+</style>
+<style id="aurelia-theme-toggle-style">
+
+/* AURELIA THEME SWITCH CONTROL - fixed, does not affect car/banners photos */
+#aurelia-theme-toggle {
+  all: unset !important;
+  position: fixed !important;
+  z-index: 2147483000 !important;
+  left: 20px !important;
+  bottom: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+  box-sizing: border-box !important;
+  min-height: 44px !important;
+  padding: 11px 17px !important;
+  border: 1px solid #bda06e !important;
+  border-radius: 999px !important;
+  background: #18191b !important;
+  color: #f3e1c1 !important;
+  font: 600 12px/1.2 'Segoe UI', Arial, sans-serif !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.25) !important;
+  transition: background-color .2s,color .2s,transform .15s !important;
+}
+#aurelia-theme-toggle:hover { transform: translateY(-2px) !important; }
+#aurelia-theme-toggle:focus-visible { outline: 3px solid #c8a56a !important; outline-offset: 3px !important; }
+#aurelia-theme-toggle .aurelia-theme-icon { font-size: 20px !important; line-height: 1 !important; color: inherit !important; }
+#aurelia-theme-toggle .aurelia-theme-label { color: inherit !important; font: inherit !important; }
+html[data-aurelia-theme="light"] #aurelia-theme-toggle {
+  background: #ffffff !important;
+  color: #72552c !important;
+  border-color: #cbb17f !important;
+  box-shadow: 0 8px 22px rgba(72,51,18,.12) !important;
+}
+@@media(max-width: 520px) {
+  #aurelia-theme-toggle { left: 12px !important; bottom: 12px !important; padding: 9px 13px !important; min-height: 42px !important; }
+}
+
+</style>
+
+<script id="aurelia-theme-boot">
+// Apply the saved choice before the page is painted (default: original dark theme).
+(function () {
+  var mode = 'dark';
+  try {
+    if (window.localStorage.getItem('aurelia.theme') === 'light') mode = 'light';
+  } catch (_) { /* Browsers blocking storage still support temporary switching. */ }
+  document.documentElement.setAttribute('data-aurelia-theme', mode);
+  var lightStyle = document.getElementById('aurelia-light-style');
+  if (lightStyle) lightStyle.media = mode === 'light' ? 'all' : 'not all';
+})();
+</script>
+
+</head><body>
+<header class="header"><div class="head-inner"><a class="brand" href="/">AURELIA</a><nav class="top-links"><a href="/">Bộ sưu tập</a><a href="/Cart">Giỏ xe</a></nav></div></header>
+<main class="wrap"><p class="eyebrow">AURELIA / PRIVATE ACCOUNT</p><h1 class="title">Đơn hàng của tôi</h1><p class="desc">Theo dõi các yêu cầu đặt siêu xe được tạo khi bạn đăng nhập tài khoản AURELIA. Các đơn đặt ở chế độ khách hoặc trước khi cập nhật hệ thống sẽ không tự động gắn với tài khoản.</p>
+<section class="panel" aria-label="Danh sách đơn đặt xe">
+@if (Model.Count == 0)
+{
+ <div class="empty"><div class="empty-icon">◇</div><h2>Chưa có đơn đặt xe</h2><p>Đăng nhập và gửi yêu cầu đặt xe mới để đơn xuất hiện trong tài khoản của bạn.</p><a href="/" class="primary">KHÁM PHÁ SIÊU XE →</a></div>
+}
+else
+{
+ <div class="table-wrap"><table><thead><tr><th>Mã đơn</th><th>Ngày đặt</th><th>Số xe</th><th>Giá trị</th><th>Trạng thái</th><th>Chi tiết</th></tr></thead><tbody>
+ @foreach (var o in Model)
+ {
+  var label = o.Status switch { "confirmed" => "Đã xác nhận", "completed" => "Hoàn tất", "cancelled" => "Đã hủy", _ => "Chờ xử lý" };
+  var css = o.Status is "pending" or "confirmed" or "completed" or "cancelled" ? o.Status : "pending";
+  <tr><td class="code">@o.OrderCode</td><td class="muted">@o.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td><td>@o.TotalVehicles</td><td class="money">@o.TotalAmount.ToString("N0", vi) ₫</td><td><span class="badge @css">@label</span></td><td><a class="action" href="/Account/MyOrders/@o.Id">Xem chi tiết →</a></td></tr>
+ }
+ </tbody></table></div>
+ <p class="note">Hiển thị tối đa 100 đơn gần nhất. Đây là yêu cầu đặt xe, không phải hóa đơn thanh toán trực tuyến.</p>
+}
+</section></main><footer class="footer">AURELIA — CURATED MOTORING EXCELLENCE</footer>
+
+<!-- AURELIA theme switch: site-wide choice saved across pages -->
+<button id="aurelia-theme-toggle" type="button" title="Đổi giao diện sáng / tối" aria-label="Chuyển sang nền sáng" aria-pressed="false">
+  <span class="aurelia-theme-icon" aria-hidden="true">☀</span>
+  <span class="aurelia-theme-label">Nền sáng</span>
+</button>
+<script id="aurelia-theme-toggle-script">
+(function () {
+  var button = document.getElementById('aurelia-theme-toggle');
+  var lightStyle = document.getElementById('aurelia-light-style');
+  if (!button || !lightStyle) return;
+  var icon = button.querySelector('.aurelia-theme-icon');
+  var label = button.querySelector('.aurelia-theme-label');
+  function apply(theme) {
+    var light = theme === 'light';
+    document.documentElement.setAttribute('data-aurelia-theme', light ? 'light' : 'dark');
+    lightStyle.media = light ? 'all' : 'not all';
+    icon.textContent = light ? '☾' : '☀';
+    label.textContent = light ? 'Nền tối' : 'Nền sáng';
+    button.setAttribute('aria-pressed', String(light));
+    button.setAttribute('aria-label', light ? 'Chuyển sang nền tối' : 'Chuyển sang nền sáng');
+    button.title = light ? 'Chuyển sang nền tối (AURELIA)' : 'Chuyển sang nền sáng (AURELIA)';
+  }
+  apply(document.documentElement.getAttribute('data-aurelia-theme'));
+  button.addEventListener('click', function () {
+    var next = document.documentElement.getAttribute('data-aurelia-theme') === 'light' ? 'dark' : 'light';
+    try { window.localStorage.setItem('aurelia.theme', next); } catch (_) {}
+    apply(next);
+  });
+  window.addEventListener('storage', function (event) {
+    if (event.key === 'aurelia.theme') apply(event.newValue === 'light' ? 'light' : 'dark');
+  });
+})();
+</script>
+
+</body></html>

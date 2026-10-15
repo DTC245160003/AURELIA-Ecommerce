@@ -1,0 +1,223 @@
+@model HongAnhShop.Models.AdminStaffPage
+@{
+    Layout = null;
+    ViewData["Title"] = "Phân quyền nhân viên | AURELIA";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>@ViewData["Title"]</title>
+<style>
+:root{--bg:#090a0b;--panel:#151619;--gold:#d2b47a;--gold2:#f0dbb2;--text:#f3f0e9;--muted:#a7a6a4;--line:rgba(210,180,122,.22)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,'Segoe UI',Arial,sans-serif}a{text-decoration:none;color:inherit}
+.shell{min-height:100vh;display:flex}.sidebar{flex:0 0 264px;background:#101113;border-right:1px solid var(--line);padding:36px 20px}
+.brand{text-align:center;font:27px "Times New Roman",serif;letter-spacing:5px;color:var(--gold2)}.brand-sub{text-align:center;color:#999;letter-spacing:3px;font-size:10px;margin:9px 0 40px}
+.navtitle{padding:0 15px;font-size:10px;letter-spacing:2px;color:#888;margin-bottom:14px}.nav a{display:block;padding:14px 15px;margin:4px 0;color:#aba9a7;border-radius:9px;font-size:13px}.nav a:hover,.nav a.active{background:rgba(210,180,122,.11);color:var(--gold2)}
+.main{flex:1;min-width:0;max-width:1530px;padding:37px 42px 70px}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase}h1{font:normal clamp(29px,3vw,39px) "Times New Roman",serif;margin:9px 0 12px}.subtitle{color:var(--muted);font-size:14px;line-height:1.7;margin:0 0 25px}
+.topline{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:24px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:transparent;color:var(--gold2);border:1px solid var(--gold);border-radius:8px;padding:11px 16px;font-size:13px;font-family:inherit}.btn:hover{background:var(--gold);color:#090909}.btn.primary{background:var(--gold);color:#17130a}.btn.light{border-color:#505053;color:#ded9cd}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:25px}.metric{background:linear-gradient(135deg,#1a1a1b,#121315);border:1px solid var(--line);border-radius:12px;padding:21px}.metric .num{color:var(--gold2);font:normal 30px "Times New Roman",serif}.metric .label{color:var(--muted);font-size:12px;margin-top:7px}
+.panel{background:linear-gradient(160deg,#1b1c1e,#111214);border:1px solid var(--line);border-radius:13px;padding:23px}.filters{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 17px}.input,select{background:#0d0e10;color:var(--text);border:1px solid #414042;border-radius:8px;padding:12px 14px;font:inherit;font-size:13px;min-height:43px}input:focus,select:focus{outline:1px solid var(--gold)}.filters .input{flex:1;min-width:220px}.filters select{min-width:160px}
+table{border-collapse:collapse;width:100%}th{text-transform:uppercase;color:var(--gold);font-size:10px;letter-spacing:1.3px;font-weight:600;text-align:left;padding:16px 12px;border-bottom:1px solid var(--line)}td{padding:17px 12px;border-bottom:1px solid rgba(255,255,255,.065);font-size:13px;vertical-align:middle}.table-scroll{overflow-x:auto}.id{color:#888}.muted{color:var(--muted)}.badge{display:inline-block;padding:6px 10px;border-radius:99px;font-size:11px;white-space:nowrap}.badge.staff{color:#f5dba3;background:#4a3a22}.badge.user{color:#a9d5fa;background:#243c4c}.badge.no{color:#f2a9a9;background:#45262b}.badge.yes{color:#a9e6c2;background:#153928}.name{font-weight:600}.action{color:var(--gold2);font-weight:600}.action:hover{text-decoration:underline}
+.note{color:var(--muted);font-size:12px;line-height:1.8;margin:19px 0 0}.info{border:1px solid var(--line);background:rgba(210,180,122,.06);border-radius:11px;padding:18px 22px;line-height:1.8;color:#c8c4ba;font-size:13px;margin-top:20px}
+@@media(max-width:950px){.sidebar{flex-basis:205px}.main{padding:25px}.cards{gap:9px}}@@media(max-width:700px){.shell{display:block}.sidebar{padding:20px}.brand-sub{margin-bottom:18px}.navtitle{display:none}.nav{display:flex;flex-wrap:wrap;gap:4px}.nav a{padding:11px}.main{padding:25px 16px 40px}.cards{grid-template-columns:1fr}.panel{padding:14px}}
+</style>
+
+<style id="aurelia-light-style" media="not all">
+/* AURELIA light administration: color-only override */
+:root{
+ --bg:#f8f7f3;--nav:#fff;--panel:#fff;--panel2:#fbfaf7;
+ --line:#e5dfd5;--gold:#876438;--gold2:#79572e;--gold-light:#79572e;
+ --fg:#282520;--text:#282520;--muted:#706a62;
+ --danger:#a33e3e;--ok:#247443
+}
+html{color-scheme:light}
+body{background:#f8f7f3;color:#282520}
+.sidebar{background:#ffffff;border-color:#e5dfd5;box-shadow:4px 0 25px rgba(71,52,24,.035)}
+.brand,.logo{color:#806039}
+.brand-sub,.sublogo,.nav-title,.navtitle,.side-label,.side-footer,.sidebar-note{color:#746f67}
+.nav-link,.nav a,.side-nav a{color:#514a40}
+.nav-link.active,.nav-link:hover,.nav a.active,.nav a:hover,.side-nav a.active,.side-nav a:hover{background:#f4ead9;color:#725329}
+.nav-link.disabled{color:#8c857b}
+.card,.metric,.stat,.panel,.info,form.editor{background:#fff;border-color:#e6dfd3;box-shadow:0 10px 26px rgba(75,53,24,.045)}
+.table-wrap,.table-scroll{background:#fff;border-color:#e5dfd5}
+table{background:#fff}
+th{background:#f6f2ea;color:#75552b}
+th,td{border-color:#e9e3db}
+tbody tr:hover{background:#fbf7f0}
+.brand,.metric .num,.stat .value,.card-status,.action,.amount,.code,.eyebrow{color:#856236}
+.nav a,.nav-link,.side-nav a{transition:background .2s,color .2s}
+.input,select,.field input,.field select,input:not([type=checkbox]):not([type=radio]):not([type=hidden]),textarea{
+ background:#fff;color:#25221d;border-color:#d7cbbb
+}
+input::placeholder,textarea::placeholder{color:#827b70}
+.btn,.pill-link,.action,.toolbar-links a{color:#75552d;border-color:#cbb58f;background:#fff}
+.btn:hover,.pill-link:hover,.toolbar-links a:hover{background:#f2e8d7;color:#533c20}
+.btn-primary,.btn.primary,button.primary,.btn-primary:hover,.btn.primary:hover{
+ background:#88663a;color:#fff;border-color:#88663a
+}
+.btn.light{color:#5c554b;border-color:#bbb3a7}
+.btn.danger,.btn-danger{color:#a33e3e;border-color:#dba4a4}
+.btn.danger:hover,.btn-danger:hover{background:#a33e3e;color:#fff}
+.btn[disabled]{opacity:.45}
+.badge.yes,.badge.staff,.badge.user,.badge.no,.status,.status.pending,.status.confirmed,.status.completed,.status.cancelled{
+ border-color:transparent
+}
+.badge.yes{background:#e3f5e9;color:#256d40}
+.badge.no{background:#fce8e7;color:#9d3b3b}
+.badge.staff{background:#f5ead5;color:#74501c}
+.badge.user{background:#e5f0fa;color:#315e85}
+.status{background:#fff2dc;color:#835a22;border-color:#e1c69b}
+.status.confirmed{background:#e6f1fa;color:#2b5c85;border-color:#b9d6ec}
+.status.completed{background:#e5f6e9;color:#23713f;border-color:#b8e2c4}
+.status.cancelled{background:#fce8e7;color:#a13f40;border-color:#edc4c4}
+.notice,.alert{background:#ebf7ed;color:#286b3d;border-color:#bfe2c7}
+.notice.error,.alert.error,.errors{background:#fceceb;color:#a13b3b;border-color:#eac2bf}
+.info,.footer{color:#666052}
+.field dt,.detail dt{color:#71695d}
+.photo{background:#f3eee6}
+.pill{color:#267345;border-color:#9cccac}
+.pill.off{color:#a23e3e;border-color:#d9aaaa}
+@@media(max-width:760px){.sidebar{box-shadow:none}}
+
+.info{background:#faf6ee;color:#665e52}
+.btn.light{color:#5e5449;border-color:#c9c0b4}
+
+
+</style>
+<style id="aurelia-theme-toggle-style">
+
+/* AURELIA THEME SWITCH CONTROL - fixed, does not affect car/banners photos */
+#aurelia-theme-toggle {
+  all: unset !important;
+  position: fixed !important;
+  z-index: 2147483000 !important;
+  left: 20px !important;
+  bottom: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+  box-sizing: border-box !important;
+  min-height: 44px !important;
+  padding: 11px 17px !important;
+  border: 1px solid #bda06e !important;
+  border-radius: 999px !important;
+  background: #18191b !important;
+  color: #f3e1c1 !important;
+  font: 600 12px/1.2 'Segoe UI', Arial, sans-serif !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.25) !important;
+  transition: background-color .2s,color .2s,transform .15s !important;
+}
+#aurelia-theme-toggle:hover { transform: translateY(-2px) !important; }
+#aurelia-theme-toggle:focus-visible { outline: 3px solid #c8a56a !important; outline-offset: 3px !important; }
+#aurelia-theme-toggle .aurelia-theme-icon { font-size: 20px !important; line-height: 1 !important; color: inherit !important; }
+#aurelia-theme-toggle .aurelia-theme-label { color: inherit !important; font: inherit !important; }
+html[data-aurelia-theme="light"] #aurelia-theme-toggle {
+  background: #ffffff !important;
+  color: #72552c !important;
+  border-color: #cbb17f !important;
+  box-shadow: 0 8px 22px rgba(72,51,18,.12) !important;
+}
+@@media(max-width: 520px) {
+  #aurelia-theme-toggle { left: 12px !important; bottom: 12px !important; padding: 9px 13px !important; min-height: 42px !important; }
+}
+
+</style>
+
+<script id="aurelia-theme-boot">
+// Apply the saved choice before the page is painted (default: original dark theme).
+(function () {
+  var mode = 'dark';
+  try {
+    if (window.localStorage.getItem('aurelia.theme') === 'light') mode = 'light';
+  } catch (_) { /* Browsers blocking storage still support temporary switching. */ }
+  document.documentElement.setAttribute('data-aurelia-theme', mode);
+  var lightStyle = document.getElementById('aurelia-light-style');
+  if (lightStyle) lightStyle.media = mode === 'light' ? 'all' : 'not all';
+})();
+</script>
+
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar"><div class="brand">AURELIA</div><div class="brand-sub">ADMINISTRATION</div>
+<div class="navtitle">QUẢN TRỊ HỆ THỐNG</div>
+<nav class="nav" aria-label="Quản trị">
+<a href="/Admin">◇ Tổng quan</a>
+<a href="/Admin/Products">◇ Quản lý siêu xe</a>
+<a href="/Admin/Orders">◇ Quản lý đơn hàng</a>
+<a href="/Admin/Customers">◇ Quản lý khách hàng</a>
+<a class="active" href="/Admin/Staff">✧ Phân quyền nhân viên</a>
+<a href="/">↗ Xem website</a>
+</nav></aside>
+<main class="main">
+<div class="topline"><div><div class="eyebrow">AURELIA / ACCESS CONTROL</div><h1>Phân quyền nhân viên</h1><p class="subtitle">Chỉ Admin có thể cấp hoặc thu hồi quyền Staff. Thay đổi được lưu trực tiếp vào MySQL.</p></div><a class="btn light" href="/Admin">← Dashboard</a></div>
+<section class="cards" aria-label="Tổng quan phân quyền">
+<div class="metric"><div class="num">@Model.TotalUsers</div><div class="label">Tài khoản khách hàng</div></div>
+<div class="metric"><div class="num">@Model.TotalStaff</div><div class="label">Tài khoản nhân viên</div></div>
+<div class="metric"><div class="num">@Model.Accounts.Count</div><div class="label">Kết quả trên trang</div></div>
+</section>
+<section class="panel">
+<form method="get" action="/Admin/Staff" class="filters">
+<input name="q" class="input" value="@Model.Query" maxlength="80" placeholder="Tìm họ tên, email hoặc số điện thoại..." aria-label="Tìm tài khoản" />
+<select name="role" aria-label="Lọc theo quyền"><option value="all" selected="@(Model.Filter == "all")">Tất cả User và Staff</option><option value="User" selected="@(Model.Filter == "User")">Khách hàng (User)</option><option value="Staff" selected="@(Model.Filter == "Staff")">Nhân viên (Staff)</option></select>
+<button class="btn primary" type="submit">Tìm kiếm</button><a class="btn light" href="/Admin/Staff">Xóa lọc</a>
+</form>
+<div class="table-scroll"><table><thead><tr><th>Mã</th><th>Họ tên</th><th>Liên hệ</th><th>Vai trò</th><th>Tình trạng</th><th></th></tr></thead><tbody>
+@foreach (var account in Model.Accounts)
+{
+<tr><td class="id">#@account.Id</td><td class="name">@account.FullName</td><td>@(account.Email ?? account.Phone ?? "—")</td>
+<td><span class="badge @(account.Role == "Staff" ? "staff" : "user")">@account.Role</span></td>
+<td><span class="badge @(account.IsActive ? "yes" : "no")">@(account.IsActive ? "Hoạt động" : "Đã khóa")</span></td>
+<td><a class="action" href="/Admin/Staff/@account.Id">Xem và phân quyền →</a></td></tr>
+}
+@if (!Model.Accounts.Any()) { <tr><td colspan="6" class="muted" style="padding:35px;text-align:center">Không tìm thấy tài khoản phù hợp.</td></tr> }
+</tbody></table></div>
+<p class="note">Tối đa 100 tài khoản cho mỗi lượt tìm kiếm. Tài khoản Admin không xuất hiện và không thể bị thay đổi bằng module này.</p>
+</section>
+<div class="info"><strong style="color:var(--gold2)">Nguyên tắc phân quyền</strong><div>Staff được sử dụng quản lý xe, đơn hàng và khách hàng theo quyền backend đã cấp. Staff không được cấp quyền cho người khác. Sau khi đổi quyền, tài khoản bị đổi cần đăng nhập lại vì cookie cũ không còn hợp lệ.</div></div>
+</main></div>
+
+<!-- AURELIA theme switch: site-wide choice saved across pages -->
+<button id="aurelia-theme-toggle" type="button" title="Đổi giao diện sáng / tối" aria-label="Chuyển sang nền sáng" aria-pressed="false">
+  <span class="aurelia-theme-icon" aria-hidden="true">☀</span>
+  <span class="aurelia-theme-label">Nền sáng</span>
+</button>
+<script id="aurelia-theme-toggle-script">
+(function () {
+  var button = document.getElementById('aurelia-theme-toggle');
+  var lightStyle = document.getElementById('aurelia-light-style');
+  if (!button || !lightStyle) return;
+  var icon = button.querySelector('.aurelia-theme-icon');
+  var label = button.querySelector('.aurelia-theme-label');
+  function apply(theme) {
+    var light = theme === 'light';
+    document.documentElement.setAttribute('data-aurelia-theme', light ? 'light' : 'dark');
+    lightStyle.media = light ? 'all' : 'not all';
+    icon.textContent = light ? '☾' : '☀';
+    label.textContent = light ? 'Nền tối' : 'Nền sáng';
+    button.setAttribute('aria-pressed', String(light));
+    button.setAttribute('aria-label', light ? 'Chuyển sang nền tối' : 'Chuyển sang nền sáng');
+    button.title = light ? 'Chuyển sang nền tối (AURELIA)' : 'Chuyển sang nền sáng (AURELIA)';
+  }
+  apply(document.documentElement.getAttribute('data-aurelia-theme'));
+  button.addEventListener('click', function () {
+    var next = document.documentElement.getAttribute('data-aurelia-theme') === 'light' ? 'dark' : 'light';
+    try { window.localStorage.setItem('aurelia.theme', next); } catch (_) {}
+    apply(next);
+  });
+  window.addEventListener('storage', function (event) {
+    if (event.key === 'aurelia.theme') apply(event.newValue === 'light' ? 'light' : 'dark');
+  });
+})();
+</script>
+
+</body></html>

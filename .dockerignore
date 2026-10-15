@@ -1,0 +1,12 @@
+.git
+.env
+.env.*
+**/bin
+**/obj
+**/.vs
+**/.vscode
+**/node_modules
+*.sql
+*.sql.gz
+*.log
+aurelia-backups/

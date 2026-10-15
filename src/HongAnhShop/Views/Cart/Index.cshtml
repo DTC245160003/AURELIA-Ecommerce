@@ -1,0 +1,216 @@
+@model List<HongAnhShop.Models.CartItem>
+@using System.Globalization
+@{
+    Layout = null;
+    ViewData["Title"] = "Giỏ xe của bạn | AURELIA";
+    var vi = CultureInfo.GetCultureInfo("vi-VN");
+    var total = Model.Sum(item => item.Total);
+    var count = Model.Sum(item => item.Quantity);
+}
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>@ViewData["Title"]</title>
+<style>
+:root{--bg:#0b0e10;--panel:#171a1c;--panel2:#111416;--gold:#c8aa78;--gold2:#e8d1a7;--ink:#f3f0ea;--muted:#aeb1b3;--line:rgba(200,170,120,.25);--bad:#f0b7a9;--ok:#a4d1a9}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Montserrat,"Segoe UI",Arial,sans-serif}a{color:inherit;text-decoration:none}button,input{font:inherit}button{cursor:pointer}
+.top{border-bottom:1px solid var(--line);background:#0c0f11}.top-inner{max-width:1220px;margin:auto;min-height:94px;padding:20px 26px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-family:"Times New Roman",serif;font-size:30px;letter-spacing:6px;color:var(--gold2)}.subbrand{font-size:9px;letter-spacing:3px;color:var(--muted);margin-top:5px}.nav{display:flex;flex-wrap:wrap;gap:12px}.nav a{border:1px solid var(--line);border-radius:5px;padding:11px 16px;color:var(--gold2);font-size:12px}.nav a:hover{background:#252019}
+.wrap{max-width:1220px;margin:auto;padding:52px 26px 80px}.eyebrow{font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase}.heading{font:400 clamp(36px,5vw,58px)/1.1 "Times New Roman",serif;margin:14px 0 15px}.intro{color:var(--muted);font-size:14px;line-height:1.8;max-width:680px;margin-bottom:36px}
+.layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px, .85fr);gap:28px;align-items:start}.section-label{font-size:12px;letter-spacing:2px;color:var(--gold2);text-transform:uppercase;margin:0 0 14px}.items{display:grid;gap:15px}.item{background:linear-gradient(145deg,#1a1c1e,#131517);border:1px solid var(--line);border-radius:13px;padding:22px;display:grid;grid-template-columns:100px minmax(0,1fr);gap:20px}
+.thumb{height:100px;width:100px;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:linear-gradient(135deg,#3b3022,#101112);display:grid;place-items:center;color:var(--gold);font:30px "Times New Roman",serif}.thumb img{width:100%;height:100%;object-fit:cover}.model{font:24px/1.2 "Times New Roman",serif;margin:2px 0 8px;overflow-wrap:anywhere}.item-tag{font-size:10px;letter-spacing:1.9px;color:var(--gold);margin:0 0 8px}.price{color:var(--gold2);font-weight:600;margin:10px 0 18px;font-size:15px}.item-actions{display:flex;align-items:end;justify-content:space-between;flex-wrap:wrap;gap:13px}.qty{display:flex;align-items:center;flex-wrap:wrap;gap:9px}.qty label{font-size:11px;color:var(--muted)}.qty input{width:65px;padding:10px 8px;background:#0c0f11;border:1px solid var(--line);border-radius:5px;color:var(--ink);text-align:center}.mini-btn{border:1px solid var(--line);color:var(--gold2);background:transparent;border-radius:5px;padding:10px 12px;font-size:11px}.mini-btn:hover{background:#27231d}.remove{color:var(--bad)}.item-total{color:var(--muted);font-size:12px;padding-top:10px}.item-total strong{color:var(--ink)}
+.summary{position:sticky;top:24px;background:linear-gradient(145deg,#1b1c1d,#101214);border:1px solid var(--line);border-radius:13px;padding:26px}.summary h2{font:29px "Times New Roman",serif;margin:0 0 21px}.summary-row{display:flex;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px}.summary-row span:first-child{color:var(--muted)}.summary-total{display:flex;justify-content:space-between;gap:12px;align-items:baseline;padding:22px 0}.summary-total strong{font-size:22px;color:var(--gold2);font-weight:600;white-space:nowrap}.cta{display:block;width:100%;padding:16px;background:var(--gold);color:#15110d;text-align:center;font-size:12px;font-weight:700;letter-spacing:1px;border:0;border-radius:5px}.cta:hover{background:var(--gold2)}.secondary{display:block;margin-top:12px;padding:13px;text-align:center;color:var(--gold2);border:1px solid var(--line);border-radius:5px;font-size:12px}.note{font-size:11px;color:var(--muted);line-height:1.8;margin:18px 0 0}
+.alert{border:1px solid var(--line);padding:13px 17px;margin:0 0 22px;border-radius:8px;font-size:13px;line-height:1.6}.alert.success{border-color:#49654d;color:var(--ok);background:#142019}.alert.error{border-color:#845b55;color:var(--bad);background:#241817}.empty{border:1px solid var(--line);border-radius:13px;background:var(--panel2);text-align:center;padding:72px 24px}.empty-icon{font-size:44px;color:var(--gold)}.empty h2{font:36px "Times New Roman",serif}.empty p{color:var(--muted);line-height:1.8;margin-bottom:28px}.empty .cta{max-width:260px;margin:auto}
+.footer{border-top:1px solid var(--line);padding:22px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:1px}
+@@media(max-width:860px){.layout{grid-template-columns:1fr}.summary{position:static}}
+@@media(max-width:520px){.top-inner{align-items:flex-start;flex-direction:column}.wrap{padding:36px 16px 50px}.item{grid-template-columns:76px minmax(0,1fr);padding:15px;gap:12px}.thumb{width:76px;height:76px}.model{font-size:20px}.price{font-size:13px}.item-actions{display:block}.qty{margin-bottom:12px}.summary-total strong{font-size:18px}}
+</style>
+
+<style id="aurelia-light-style" media="not all">
+/* AURELIA light cart and checkout */
+:root{--bg:#f8f7f3;--panel:#fff;--panel2:#fff;--gold:#886638;--gold2:#76552e;
+ --ink:#282520;--muted:#716a62;--line:#e4dccc;--bad:#a94444;--ok:#267344}
+html{color-scheme:light}body{background:#f8f7f3;color:#282520}
+.top,.header{background:#fff;border-color:#e8e0d4}
+.brand{color:#806039}
+.nav a,.top a,.back,.secondary{color:#78582d;border-color:#dbcbaa}
+.nav a:hover,.back:hover,.secondary:hover{background:#f3e9d8}
+.panel,.summary,.item{background:#fff;border-color:#e5ddce;box-shadow:0 12px 32px rgba(62,43,18,.055)}
+.field input,.field textarea,.qty input,input:not([type=hidden]),textarea{background:#fff;color:#282520;border-color:#d6cbb9}
+.field input::placeholder,.field textarea::placeholder{color:#81796d}
+.qty input{color:#282520}
+.thumb{background:linear-gradient(135deg,#f5ead8,#edeae4)}
+.section-label,.price,.summary-total strong{color:#79592e}
+.mini-btn{background:#fff;color:#755528}
+.mini-btn:hover{background:#f5ebdc}
+.remove,.validation{color:#ab4040}
+.cta,.btn:not(.btn-outline){background:#8b6638;color:#fff;border-color:#8b6638}
+.cta:hover,.btn:not(.btn-outline):hover{background:#735126;color:#fff}
+.btn-outline{background:#fff;color:#78582d;border-color:#c9b28c}
+.btn-outline:hover{background:#f2e7d5;color:#694923}
+.code{background:#fff;border-color:#e2d7c5}
+.note,.info{color:#716a62}
+.info{background:#fbf7f0;border-color:#e5d8c2}
+.notice{color:#286840}
+.footer{border-color:#e8e0d4}
+
+.stock-label.available{color:#237241}.stock-label.sold-out{color:#ad4242}
+.summary-total strong,.amount{color:#785729}
+
+
+</style>
+<style id="aurelia-theme-toggle-style">
+
+/* AURELIA THEME SWITCH CONTROL - fixed, does not affect car/banners photos */
+#aurelia-theme-toggle {
+  all: unset !important;
+  position: fixed !important;
+  z-index: 2147483000 !important;
+  left: 20px !important;
+  bottom: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+  box-sizing: border-box !important;
+  min-height: 44px !important;
+  padding: 11px 17px !important;
+  border: 1px solid #bda06e !important;
+  border-radius: 999px !important;
+  background: #18191b !important;
+  color: #f3e1c1 !important;
+  font: 600 12px/1.2 'Segoe UI', Arial, sans-serif !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.25) !important;
+  transition: background-color .2s,color .2s,transform .15s !important;
+}
+#aurelia-theme-toggle:hover { transform: translateY(-2px) !important; }
+#aurelia-theme-toggle:focus-visible { outline: 3px solid #c8a56a !important; outline-offset: 3px !important; }
+#aurelia-theme-toggle .aurelia-theme-icon { font-size: 20px !important; line-height: 1 !important; color: inherit !important; }
+#aurelia-theme-toggle .aurelia-theme-label { color: inherit !important; font: inherit !important; }
+html[data-aurelia-theme="light"] #aurelia-theme-toggle {
+  background: #ffffff !important;
+  color: #72552c !important;
+  border-color: #cbb17f !important;
+  box-shadow: 0 8px 22px rgba(72,51,18,.12) !important;
+}
+@@media(max-width: 520px) {
+  #aurelia-theme-toggle { left: 12px !important; bottom: 12px !important; padding: 9px 13px !important; min-height: 42px !important; }
+}
+
+</style>
+
+<script id="aurelia-theme-boot">
+// Apply the saved choice before the page is painted (default: original dark theme).
+(function () {
+  var mode = 'dark';
+  try {
+    if (window.localStorage.getItem('aurelia.theme') === 'light') mode = 'light';
+  } catch (_) { /* Browsers blocking storage still support temporary switching. */ }
+  document.documentElement.setAttribute('data-aurelia-theme', mode);
+  var lightStyle = document.getElementById('aurelia-light-style');
+  if (lightStyle) lightStyle.media = mode === 'light' ? 'all' : 'not all';
+})();
+</script>
+
+</head>
+<body>
+<header class="top"><div class="top-inner"><div><a class="brand" href="/">AURELIA</a><div class="subbrand">AUTOMOTIVE COLLECTION</div></div><nav class="nav" aria-label="Điều hướng"><a href="/">Khám phá siêu xe</a>@if (User.IsInRole("User")) { <a href="/Account/MyOrders">Đơn hàng của tôi</a> } else { <a href="/Account/Login">Tài khoản</a> }</nav></div></header>
+<main class="wrap">
+  <p class="eyebrow">AURELIA / PRIVATE COLLECTION</p>
+  <h1 class="heading">Giỏ xe của bạn</h1>
+  <p class="intro">Những chiếc xe bạn lựa chọn đang chờ được xác nhận. Số lượng và giá sẽ được hệ thống kiểm tra lại theo MySQL khi gửi yêu cầu đặt xe.</p>
+  @if (TempData["CartSuccess"] != null) { <div class="alert success" role="status">@TempData["CartSuccess"]</div> }
+  @if (TempData["CartError"] != null) { <div class="alert error" role="alert">@TempData["CartError"]</div> }
+  @if (!Model.Any()) {
+    <section class="empty"><div class="empty-icon">◇</div><h2>Bộ sưu tập đang trống</h2><p>Hãy khám phá những mẫu siêu xe đặc biệt và thêm chiếc xe yêu thích vào giỏ.</p><a href="/#sieu-xe" class="cta">KHÁM PHÁ SIÊU XE →</a></section>
+  } else {
+    <div class="layout">
+      <section aria-label="Xe trong giỏ"><h2 class="section-label">Đã chọn @count xe</h2><div class="items">
+        @foreach (var item in Model) {
+          <article class="item" data-product-id="@item.ProductId">
+            <div class="thumb" data-thumb="@item.ProductId" aria-hidden="true">◇</div>
+            <div>
+              <p class="item-tag">AURELIA · #@item.ProductId</p>
+              <h3 class="model">@item.Name</h3>
+              <p class="price">@item.Price.ToString("N0", vi) ₫</p>
+              <div class="item-actions">
+                <form class="qty" action="/Cart/Update" method="post">
+                  @Html.AntiForgeryToken()
+                  <input type="hidden" name="productId" value="@item.ProductId" />
+                  <label for="q-@item.ProductId">Số lượng</label>
+                  <input id="q-@item.ProductId" type="number" name="quantity" min="1" max="100" step="1" value="@item.Quantity" required />
+                  <button class="mini-btn" type="submit">Cập nhật</button>
+                </form>
+                <form action="/Cart/Remove" method="post">
+                  @Html.AntiForgeryToken()
+                  <input type="hidden" name="productId" value="@item.ProductId" />
+                  <button class="mini-btn remove" type="submit">Xóa khỏi giỏ</button>
+                </form>
+              </div>
+              <div class="item-total">Tạm tính: <strong>@item.Total.ToString("N0", vi) ₫</strong></div>
+            </div>
+          </article>
+        }
+      </div></section>
+      <aside class="summary"><p class="eyebrow">ORDER SUMMARY</p><h2>Tổng quan đặt xe</h2><div class="summary-row"><span>Số xe</span><strong>@count</strong></div><div class="summary-row"><span>Phương thức</span><strong>Gửi yêu cầu đặt xe</strong></div><div class="summary-total"><span>Tạm tính</span><strong>@total.ToString("N0",vi) ₫</strong></div><a href="/Cart/Checkout" class="cta">TIẾP TỤC ĐẶT XE →</a><a href="/#sieu-xe" class="secondary">← Tiếp tục khám phá</a><p class="note">Chưa thu tiền trực tuyến. Giá ở đây được lưu trong phiên giỏ hàng; giá và tồn kho chính xác sẽ được kiểm tra lại khi đặt xe.</p></aside>
+    </div>
+  }
+</main>
+<footer class="footer">AURELIA — CURATED MOTORING EXCELLENCE</footer>
+<script>
+// Lấy thumbnail trực tiếp từ API đang dùng cho Home. Không ảnh hưởng thao tác giỏ hàng.
+(async function(){
+ try{const response=await fetch('/api/vehicles',{headers:{Accept:'application/json'},cache:'no-store'});if(!response.ok)return;
+ const vehicles=await response.json();if(!Array.isArray(vehicles))return;
+ const byId=new Map(vehicles.map(v=>[String(v.id),v]));
+ document.querySelectorAll('[data-thumb]').forEach(el=>{
+  const p=byId.get(el.dataset.thumb);if(!p||!p.imageUrl)return;
+  const img=document.createElement('img');img.alt='';img.loading='lazy';img.referrerPolicy='no-referrer';img.src=p.imageUrl;
+  img.onerror=()=>{img.remove();el.textContent='◇'};el.textContent='';el.appendChild(img);
+ });
+ }catch(e){console.warn('Không tải được ảnh giỏ hàng',e)}
+})();
+</script>
+
+<!-- AURELIA theme switch: site-wide choice saved across pages -->
+<button id="aurelia-theme-toggle" type="button" title="Đổi giao diện sáng / tối" aria-label="Chuyển sang nền sáng" aria-pressed="false">
+  <span class="aurelia-theme-icon" aria-hidden="true">☀</span>
+  <span class="aurelia-theme-label">Nền sáng</span>
+</button>
+<script id="aurelia-theme-toggle-script">
+(function () {
+  var button = document.getElementById('aurelia-theme-toggle');
+  var lightStyle = document.getElementById('aurelia-light-style');
+  if (!button || !lightStyle) return;
+  var icon = button.querySelector('.aurelia-theme-icon');
+  var label = button.querySelector('.aurelia-theme-label');
+  function apply(theme) {
+    var light = theme === 'light';
+    document.documentElement.setAttribute('data-aurelia-theme', light ? 'light' : 'dark');
+    lightStyle.media = light ? 'all' : 'not all';
+    icon.textContent = light ? '☾' : '☀';
+    label.textContent = light ? 'Nền tối' : 'Nền sáng';
+    button.setAttribute('aria-pressed', String(light));
+    button.setAttribute('aria-label', light ? 'Chuyển sang nền tối' : 'Chuyển sang nền sáng');
+    button.title = light ? 'Chuyển sang nền tối (AURELIA)' : 'Chuyển sang nền sáng (AURELIA)';
+  }
+  apply(document.documentElement.getAttribute('data-aurelia-theme'));
+  button.addEventListener('click', function () {
+    var next = document.documentElement.getAttribute('data-aurelia-theme') === 'light' ? 'dark' : 'light';
+    try { window.localStorage.setItem('aurelia.theme', next); } catch (_) {}
+    apply(next);
+  });
+  window.addEventListener('storage', function (event) {
+    if (event.key === 'aurelia.theme') apply(event.newValue === 'light' ? 'light' : 'dark');
+  });
+})();
+</script>
+
+</body>
+</html>
