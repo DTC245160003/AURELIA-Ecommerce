@@ -1,3 +1,4 @@
+using Prometheus;
 using Microsoft.AspNetCore.Authentication;
 
 using HongAnhShop.Data;
@@ -133,6 +134,7 @@ if (!app.Environment.IsDevelopment())
 // 9. Middleware
 // =======================================
 app.UseRouting();
+app.UseHttpMetrics();
 
 // Session giỏ hàng
 app.UseSession();
@@ -146,6 +148,7 @@ app.UseAuthorization();
 // =======================================
 // 10. Static Assets
 // =======================================
+app.MapMetrics();
 app.MapStaticAssets();
 
 // =======================================

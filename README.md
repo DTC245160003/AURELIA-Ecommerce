@@ -111,7 +111,7 @@ sudo docker compose logs --tail=50 nginx
 - Docker Compose
 - Nginx Reverse Proxy và security headers
 
-### Commit 2 - Monitoring (dự kiến)
+### Commit 2 - Monitoring
 - Prometheus và Grafana
 - Thu thập metrics
 - Dashboard giám sát hệ thống
@@ -130,4 +130,107 @@ sudo docker compose logs --tail=50 nginx
 5. Mở phpMyAdmin để kiểm tra dữ liệu MySQL.
 6. Kiểm tra HTTP security headers của Nginx.
 
-Các giai đoạn 2 và 3 sẽ cập nhật README sau khi hoàn thành.
+
+## 11. Monitoring - Prometheus và Grafana
+
+### 11.1. Mục đích
+
+Hệ thống AURELIA sử dụng Prometheus và Grafana để giám sát hoạt động của website, các Docker container và cơ sở dữ liệu MySQL.
+
+### 11.2. Các thành phần
+
+- Prometheus 3.5.0: Thu thập và lưu trữ Metrics.
+- Grafana 11.6.1: Hiển thị biểu đồ giám sát.
+- Telegraf 1.36: Thu thập CPU và RAM của Docker container.
+- MySQL Exporter 0.17.2: Thu thập Metrics từ MySQL.
+- prometheus-net.AspNetCore: Cung cấp HTTP Metrics cho website ASP.NET Core.
+
+### 11.3. Địa chỉ truy cập
+
+Trên máy Ubuntu chạy Docker:
+
+- Website: http://127.0.0.1
+- Prometheus: http://127.0.0.1:9090
+- Grafana: http://127.0.0.1:3000
+
+Các dịch vụ Monitoring sử dụng kết nối localhost. Khi làm việc từ Windows qua VS Code Remote SSH, cần chuyển tiếp cổng tương ứng.
+
+Mật khẩu Grafana được quản lý bằng biến GF_SECURITY_ADMIN_PASSWORD trong file .env.
+
+### 11.4. Các nguồn dữ liệu Prometheus
+
+Prometheus thu thập Metrics với chu kỳ 15 giây từ ba nguồn:
+
+- aurelia-web: web:8080/metrics
+- aurelia-docker: telegraf:9273/metrics
+- aurelia-mysql: mysql-exporter:9104/metrics
+
+Kiểm tra các Targets tại:
+
+http://127.0.0.1:9090/targets
+
+Trạng thái UP cho biết Prometheus đang thu thập thành công từ Target tương ứng.
+
+Endpoint /metrics của website được sử dụng trong mạng Docker và bị Nginx chặn truy cập công khai.
+
+### 11.5. Dashboard Grafana
+
+Dashboard: AURELIA - System Monitoring
+
+Bao gồm 5 biểu đồ:
+
+1. Website Status: Trạng thái thu thập Metrics từ website.
+2. Docker CPU Usage (%): Mức sử dụng CPU của các container.
+3. Docker RAM Usage (MiB): Bộ nhớ RAM của các container.
+4. MySQL Active Connections: Số kết nối MySQL đang hoạt động.
+5. MySQL Queries per Second: Tốc độ xử lý câu lệnh của MySQL.
+
+Grafana sử dụng Prometheus Data Source với URL nội bộ:
+
+http://prometheus:9090
+
+### 11.6. Grafana Provisioning
+
+Cấu hình Monitoring được lưu tại:
+
+- monitoring/prometheus/prometheus.yml
+- monitoring/telegraf/telegraf.conf
+- monitoring/grafana/provisioning/datasources/prometheus.yml
+- monitoring/grafana/provisioning/dashboards/aurelia.yml
+- monitoring/grafana/dashboards/aurelia-dashboard.json
+
+Grafana đọc cấu hình Data Source và Dashboard từ các file này khi khởi động.
+
+File monitoring/grafana/aurelia-dashboard.json được giữ lại để có thể Import thủ công.
+
+Lưu ý: Khi triển khai với MySQL volume mới, cần tạo tài khoản metrics_exporter với quyền giám sát phù hợp và cấu hình MYSQL_EXPORTER_PASSWORD trước khi MySQL Exporter có thể thu thập dữ liệu.
+
+### 11.7. Kiểm tra Monitoring
+
+Kiểm tra các container:
+
+sudo docker compose ps
+
+Kiểm tra cấu hình Docker Compose:
+
+sudo docker compose config -q
+
+Kiểm tra nhật ký:
+
+sudo docker compose logs --tail=50 grafana
+sudo docker compose logs --tail=50 prometheus
+sudo docker compose logs --tail=50 telegraf
+sudo docker compose logs --tail=50 mysql-exporter
+
+Mở Grafana, chọn Dashboards, vào thư mục AURELIA và mở AURELIA - System Monitoring.
+
+Kiểm tra các biểu đồ hiển thị dữ liệu thực tế.
+
+### 11.8. Lưu trữ và bảo mật
+
+- Prometheus sử dụng Docker volume để lưu dữ liệu Metrics.
+- Grafana sử dụng Docker volume để lưu cấu hình và dữ liệu.
+- Mật khẩu được lưu trong .env, không đưa lên GitHub.
+- Grafana và Prometheus chỉ publish trên localhost.
+- MySQL Exporter sử dụng tài khoản giám sát riêng, không dùng tài khoản root.
+- Không sử dụng docker compose down -v khi cần giữ dữ liệu.

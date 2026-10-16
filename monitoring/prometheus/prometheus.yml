@@ -1,0 +1,20 @@
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "aurelia-web"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["web:8080"]
+
+  - job_name: "aurelia-docker"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["telegraf:9273"]
+
+  - job_name: "aurelia-mysql"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["mysql-exporter:9104"]
