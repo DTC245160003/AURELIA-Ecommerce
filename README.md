@@ -116,7 +116,7 @@ sudo docker compose logs --tail=50 nginx
 - Thu thập metrics
 - Dashboard giám sát hệ thống
 
-### Commit 3 - Logging và Hardening (dự kiến)
+### Commit 3 - Logging và Hardening
 - Loki và Promtail
 - Truy vấn LogQL
 - Kiểm thử và hoàn thiện bảo mật
@@ -234,3 +234,115 @@ Kiểm tra các biểu đồ hiển thị dữ liệu thực tế.
 - Grafana và Prometheus chỉ publish trên localhost.
 - MySQL Exporter sử dụng tài khoản giám sát riêng, không dùng tài khoản root.
 - Không sử dụng docker compose down -v khi cần giữ dữ liệu.
+
+
+## 12. Logging - Loki, Promtail và LogQL
+
+### 12.1. Kiến trúc Logging
+
+Hệ thống AURELIA triển khai nhật ký tập trung theo luồng:
+
+Docker Containers -> Promtail -> Loki -> Grafana
+
+- Promtail 3.5.0: Thu thập nhật ký Docker và gắn nhãn service.
+- Loki 3.5.0: Tiếp nhận, lưu trữ và cho phép truy vấn nhật ký.
+- Grafana 11.6.1: Hiển thị log và thực hiện các truy vấn LogQL.
+
+Loki chỉ sử dụng mạng Docker nội bộ, không mở cổng công khai ra Internet.
+
+### 12.2. Cấu hình
+
+- monitoring/loki/loki-config.yml
+- monitoring/promtail/promtail-config.yml
+- compose.override.yaml
+
+Loki sử dụng Docker volume loki_data để lưu dữ liệu.
+Promtail sử dụng volume promtail_positions để ghi nhớ vị trí đọc nhật ký.
+
+### 12.3. Truy cập Logging
+
+Mở Grafana tại http://127.0.0.1:3000
+
+Chọn Explore -> Loki -> Code.
+
+Loki Data Source sử dụng URL nội bộ:
+
+http://loki:3100
+
+Nên chọn Last 1 hour khi trình diễn để dễ quan sát nhật ký.
+
+### 12.4. Ba câu truy vấn LogQL
+
+Truy vấn 1 - Xem nhật ký Nginx:
+
+    {job="docker", service="nginx"}
+
+Truy vấn 2 - Lọc cảnh báo và lỗi:
+
+    {job="docker", service="nginx"} |~ "(?i)error|warn|failed"
+
+Truy vấn 3 - Thống kê số dòng log trong cửa sổ 5 phút:
+
+    sum(count_over_time({job="docker", service="nginx"}[5m]))
+
+Truy vấn nâng cao - So sánh số lượng log giữa các service:
+
+    sum by (service) (count_over_time({job="docker"}[5m]))
+
+Lưu ý: Truy vấn 3 và truy vấn nâng cao trả về dữ liệu thống kê để vẽ biểu đồ, không phải danh sách dòng log.
+
+### 12.5. Kiểm tra Logging
+
+Kiểm tra container:
+
+    sudo docker compose ps loki promtail
+
+Kiểm tra nhật ký dịch vụ:
+
+    sudo docker compose logs --tail=30 loki
+    sudo docker compose logs --tail=30 promtail
+
+Phát sinh yêu cầu HTTP để tạo log truy cập:
+
+    curl http://127.0.0.1/
+
+Sau đó vào Grafana Explore và Refresh truy vấn LogQL.
+
+## 13. Hardening - Tăng cường bảo mật
+
+Hệ thống áp dụng các biện pháp:
+
+1. Non-root: Ứng dụng web chạy bằng tài khoản app, UID 1654.
+2. Least Privilege: Tài khoản MySQL shop_app chỉ được cấp quyền cần thiết trên các bảng ứng dụng.
+3. Network Isolation: MySQL, phpMyAdmin, Prometheus và Grafana chỉ publish trên localhost Ubuntu. Loki và Promtail không mở cổng công khai.
+4. Security Headers: Nginx áp dụng X-Frame-Options, X-Content-Type-Options và Referrer-Policy.
+5. Secret Protection: Mật khẩu nằm trong .env và không được đưa lên GitHub.
+
+Kiểm tra Non-root:
+
+    sudo docker compose exec -T web id
+
+Kiểm tra Security Headers:
+
+    curl -s -X GET -D - -o /dev/null http://127.0.0.1/
+
+Kiểm tra cổng các container:
+
+    sudo docker compose ps
+
+Kiểm tra Git không theo dõi .env:
+
+    git ls-files -- .env
+
+Lưu ý bảo mật: Quyền truy cập Docker socket của các công cụ giám sát là quyền nhạy cảm. Mô hình hiện tại phục vụ thực hành trong máy ảo Ubuntu, không nên xem là cấu hình production hoàn chỉnh.
+
+## 14. Trình diễn hệ thống khi thi
+
+1. Kiểm tra các container bằng sudo docker compose ps.
+2. Mở website AURELIA qua Nginx và thực hiện các thao tác cơ bản.
+3. Mở phpMyAdmin kiểm tra dữ liệu MySQL.
+4. Mở Prometheus Targets để chứng minh ba nguồn Metrics UP.
+5. Mở Grafana Dashboard AURELIA - System Monitoring.
+6. Vào Grafana Explore, chọn Loki và trình diễn ba câu LogQL.
+7. Chứng minh Non-root, Security Headers và phân quyền MySQL.
+8. Mở GitHub để trình bày ba commit triển khai.
